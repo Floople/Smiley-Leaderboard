@@ -8,6 +8,7 @@ import "./App.css";
 import { ClickUIProvider, Button, Icon } from '@clickhouse/click-ui';
 
 
+// Main App component
 function App() {
   const [backEndData, setBackEndData] = useState({});
   const [error, setError] = useState(null);
