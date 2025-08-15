@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function Player({ player, columns, idx, handleDelete }) {
   // Defensive: always return items as an array
   const safeColumns = Array.isArray(columns) ? columns : [];

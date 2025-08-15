@@ -5,7 +5,7 @@ import AddPlayer from "./components/AddPlayer.jsx";
 import Leaderboard from "./components/Leaderboard.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { ClickUIProvider, Text, Switch, Button, Icon } from '@clickhouse/click-ui';
+import { ClickUIProvider, Button, Icon } from '@clickhouse/click-ui';
 
 
 function App() {

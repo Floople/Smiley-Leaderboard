@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Player from "./Player";
 import { Button, Icon, Table } from '@clickhouse/click-ui';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +8,6 @@ const TIER_ORDER = [
 const RANK_ORDER = ["I", "II", "III", "IV"];
 
 export default function LeaderboardTable({ leaderboard, handleDelete, handleRefresh, handleUpdate, showAddRow }) {
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const safeLeaderboard = Array.isArray(leaderboard) ? leaderboard : [];
     const columns = safeLeaderboard.length > 0 ? Object.keys(safeLeaderboard[0]) : [
@@ -25,15 +23,6 @@ export default function LeaderboardTable({ leaderboard, handleDelete, handleRefr
         const rankB = RANK_ORDER.indexOf(b.rank);
         return rankA - rankB;
     });
-
-    const handleUpdateClick = async () => {
-        setLoading(true);
-        try {
-            await handleUpdate();
-        } finally {
-            setLoading(false);
-        }
-    };
 
     // Remove 'tagLine' from columns for display
     const displayColumns = columns.filter(col => col.toLowerCase() !== 'tagline');
