@@ -1,5 +1,14 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 
+async function checkIfRequestIsAuthenticated(request, env) {
+  // Example: Check for API key in header
+  const apiKey = request.headers.get("SMILEY_LEADERBOARD_AUTHENTICATOR");
+  if (apiKey && apiKey === env.API_KEY_VALUE) {
+    return { name: "authorized-user" };
+  }
+  return null;
+}
+
 export default class extends WorkerEntrypoint {
   async fetch(request) {
     // You can perform checks before fetching assets
@@ -22,3 +31,4 @@ export default class extends WorkerEntrypoint {
       .transform(assetResponse);
   }
 }
+
