@@ -6,3 +6,6 @@ main = "index.js"
 directory = "../client/react-crud/build"
 binding = "ASSETS"
 run_worker_first = true
+
+[observability.logs]
+enabled = true

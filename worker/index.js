@@ -5,6 +5,10 @@ export default class extends WorkerEntrypoint {
     // You can perform checks before fetching assets
     const user = await checkIfRequestIsAuthenticated(request);
 
+    if (!user) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
     // You can then just fetch the assets as normal, or you could pass in a custom Request object here if you wanted to fetch some other specific asset
     const assetResponse = await this.env.ASSETS.fetch(request);
 
