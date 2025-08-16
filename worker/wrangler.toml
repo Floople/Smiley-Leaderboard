@@ -1,0 +1,8 @@
+name = "my-worker"
+compatibility_date = "2025-08-15"
+main = "./worker/index.ts"
+
+[assets]
+directory = "./dist/"
+binding = "ASSETS"
+run_worker_first = true
