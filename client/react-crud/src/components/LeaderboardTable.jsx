@@ -21,7 +21,10 @@ export default function LeaderboardTable({ leaderboard, handleDelete, handleRefr
         if (tierA !== tierB) return tierA - tierB;
         const rankA = RANK_ORDER.indexOf(a.rank);
         const rankB = RANK_ORDER.indexOf(b.rank);
-        return rankA - rankB;
+        if (rankA !== rankB) return rankA - rankB;
+        const lpA = a.lp || 0;
+        const lpB = b.lp || 0;
+        return lpB - lpA; 
     });
 
     // Remove 'tagLine' from columns for display

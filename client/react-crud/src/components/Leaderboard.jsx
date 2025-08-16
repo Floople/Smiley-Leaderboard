@@ -51,7 +51,7 @@ const Leaderboard = props => {
             <div className="leaderboard-header">
                 <h2 className="Smiley" color="default" family="brand" size="md">:)</h2>
                 <div className="leaderboard-header-buttons">
-                    <Button onClick={handleUpdate} type="secondary" loading={loading}>
+                    <Button onClick={handleUpdate} type="secondary" loading={loading} style={{ border: 'none', boxShadow: 'none', outline: 'none', background: 'transparent' }}>
                         <Icon name="refresh" size="md" state="default" height={12} width={12} />
                     </Button>
                 </div>

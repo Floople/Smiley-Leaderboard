@@ -1,8 +1,7 @@
 name = "my-worker"
 compatibility_date = "2025-08-15"
-main = "./worker/index.ts"
+main = "index.js"
 
 [assets]
-directory = "./dist/"
-binding = "ASSETS"
+directory = "../client/react-crud/build"
 run_worker_first = true

@@ -44,7 +44,7 @@ function App() {
       <div className="MainPage">
         <div className="Switch">
           <Button type="primary" onClick={() => toggleTheme()} style={{ border: 'none', boxShadow: 'none', outline: 'none', background: 'transparent' }}>
-            <Icon name={theme === 'dark' ? 'star' : 'moon'} size="xs" style={{ color: theme === 'dark' ? '#ffff66' : '#222' }} />
+            <Icon name={theme === 'dark' ? 'star' : 'moon'} size="md" style={{ color: theme === 'dark' ? '#ffff66' : '#222' }} />
           </Button>
         </div>
         <div className="Menu">
