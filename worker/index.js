@@ -1,9 +1,8 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 
 async function checkIfRequestIsAuthenticated(request, env) {
-  // Example: Check for API key in header
   const apiKey = request.headers.get("SMILEY_LEADERBOARD_AUTHENTICATOR");
-  if (apiKey && apiKey === env.API_KEY_VALUE) {
+  if (apiKey && apiKey === env.SMILEY_LEADERBOARD_AUTHENTICATOR) {
     return { name: "authorized-user" };
   }
   return null;
@@ -11,24 +10,14 @@ async function checkIfRequestIsAuthenticated(request, env) {
 
 export default class extends WorkerEntrypoint {
   async fetch(request) {
-    // You can perform checks before fetching assets
-    const user = await checkIfRequestIsAuthenticated(request);
-
-    if (!user) {
-      return new Response("Unauthorized", { status: 401 });
+    const url = new URL(request.url);
+    // Only require authentication for /api/* routes
+    if (url.pathname.startsWith("/api/")) {
+      const user = await checkIfRequestIsAuthenticated(request, this.env);
+      if (!user) {
+        return new Response("Unauthorized", { status: 401 });
+      }
     }
-
-    // You can then just fetch the assets as normal, or you could pass in a custom Request object here if you wanted to fetch some other specific asset
-    const assetResponse = await this.env.ASSETS.fetch(request);
-
-    // You can return static asset response as-is, or you can transform them with something like HTMLRewriter
-    return new HTMLRewriter()
-      .on("#user", {
-        element(element) {
-          element.setInnerContent(JSON.stringify({ name: user.name }));
-        },
-      })
-      .transform(assetResponse);
+    return await this.env.ASSETS.fetch(request);
   }
 }
-
