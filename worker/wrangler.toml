@@ -1,4 +1,4 @@
-name = "my-worker"
+name = 'smiley-leaderboard'
 compatibility_date = "2025-08-15"
 main = "index.js"
 
