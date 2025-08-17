@@ -1,7 +1,10 @@
+
 import { dbGetAll, dbInsert, dbDelete, dbWipe, dbGetPlayers } from "../db/index.js";
 import { riotPUUID, riotPlayerDetails } from '../riot/index.js';
+import { Router } from 'itty-router';
 
-// Helper to build headers
+const router = Router();
+
 function buildHeaders() {
   return {
     "Content-Type": "application/json",
@@ -10,7 +13,7 @@ function buildHeaders() {
 }
 
 // GET /api
-export async function handleGetApi(request, env) {
+router.get('/api', async (request, env) => {
   try {
     const rows = await dbGetAll();
     return new Response(JSON.stringify({ leaderboard: rows }), {
@@ -23,10 +26,10 @@ export async function handleGetApi(request, env) {
       headers: buildHeaders()
     });
   }
-}
+});
 
 // POST /api/insert
-export async function handleInsertApi(request, env) {
+router.post('/api/insert', async (request, env) => {
   try {
     const body = await request.json();
     const { summoner_name, tagLine } = body;
@@ -49,10 +52,10 @@ export async function handleInsertApi(request, env) {
       headers: buildHeaders()
     });
   }
-}
+});
 
 // POST /api/update
-export async function handleUpdateApi(request, env) {
+router.post('/api/update', async (request, env) => {
   try {
     const players = await dbGetPlayers();
     await dbWipe();
@@ -80,10 +83,10 @@ export async function handleUpdateApi(request, env) {
       headers: buildHeaders()
     });
   }
-}
+});
 
 // POST /api/delete
-export async function handleDeleteApi(request, env) {
+router.post('/api/delete', async (request, env) => {
   try {
     const body = await request.json();
     const { items } = body;
@@ -101,4 +104,6 @@ export async function handleDeleteApi(request, env) {
       headers: buildHeaders()
     });
   }
-}
+});
+
+export { router };

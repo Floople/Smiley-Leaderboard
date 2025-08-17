@@ -1,4 +1,3 @@
-import bodyParser from "body-parser";
 // Riot API helper functions
 
 export async function riotPUUID(summoner_name, tagLine) {
