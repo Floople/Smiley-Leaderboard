@@ -12,6 +12,10 @@ function buildHeaders() {
   };
 }
 
+router.all('*', async (request, env) => {
+  return await env.ASSETS.fetch(request);
+});
+
 // GET /api
 router.get('/api', async (request, env) => {
   try {
