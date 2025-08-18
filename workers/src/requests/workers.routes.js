@@ -12,9 +12,6 @@ function buildHeaders() {
   };
 }
 
-router.all('*', async (request, env) => {
-  return await env.ASSETS.fetch(request);
-});
 
 // GET /api
 router.get('/api', async (request, env) => {
@@ -108,6 +105,11 @@ router.post('/api/delete', async (request, env) => {
       headers: buildHeaders()
     });
   }
+});
+
+
+router.all('*', async (request, env) => {
+  return await env.ASSETS.fetch(request);
 });
 
 export { router };

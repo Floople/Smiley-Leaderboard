@@ -1,11 +1,8 @@
-
-
 import { router } from './requests/workers.routes.js';
 
 export default {
   async fetch(request, env) {
     try {
-      // Use the router for all API and static asset requests
       const response = await router.handle(request, env);
       if (response) {
         return response;
