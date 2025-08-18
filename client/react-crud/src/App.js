@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import LeaderboardService from "./services/LeaderboardService.jsx";
 import AddPlayer from "./components/AddPlayer.jsx";
@@ -6,11 +6,10 @@ import Leaderboard from "./components/Leaderboard.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { ClickUIProvider, Button, Icon } from '@clickhouse/click-ui';
+import useHandles from "./util/useHandles.jsx";
 
-
-// Main App component
 function App() {
-  const [backEndData, setBackEndData] = useState({});
+  const [leaderboard, setLeaderboard] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [theme, setTheme] = useState('dark');
@@ -19,28 +18,42 @@ function App() {
     theme === 'dark' ? setTheme('light') : setTheme('dark')
   }
 
+  const fetchLeaderboard = async (retryCount = 0) => {
+    try {
+      const response = await LeaderboardService.getAll();
+      const data = response.data.leaderboard;
+      if (Array.isArray(data)) {
+        setLeaderboard(data);
+      } else {
+        setLeaderboard([]);
+        console.log('Leaderboard data from API is not an array:', data);
+      }
+    } catch (err) {
+      if (err.message.includes('Failed to fetch leaderboard data') && retryCount < 3) {
+        // Wait 500ms and retry up to 3 times
+        setTimeout(() => fetchLeaderboard(retryCount + 1), 500);
+      } else {
+        setError(err.message);
+      }
+    }
+  };
+
   useEffect(() => {
     console.log('Action: Fetching leaderboard data');
-    LeaderboardService.getAll()
-      .then(response => {
-        console.log('Action: Received leaderboard data', response.data);
-        setBackEndData(response.data);
-      })
-      .catch(err => {
-        console.log('Action: Error fetching leaderboard data', err);
-        setError(err.message);
-      });
+    fetchLeaderboard();
   }, []);
+
+  const { handleUpdate, loading, handleDelete, handleRefresh } = useHandles({ setError, fetchLeaderboard });
 
   // Log navigation actions and navigate
   const handleNav = (destination) => {
     console.log(`Action: Navigating to ${destination}`);
     navigate(destination);
   };
-  
-  console.log('Leaderboard data:', backEndData.leaderboard);
+
+  console.log('Leaderboard data:', leaderboard);
   return (
-     <ClickUIProvider theme={theme} >
+    <ClickUIProvider theme={theme} >
       <div className="MainPage">
         <div className="Switch">
           <Button type="primary" onClick={() => toggleTheme()} style={{ border: 'none', boxShadow: 'none', outline: 'none', background: 'transparent' }}>
@@ -49,13 +62,13 @@ function App() {
         </div>
         <div className="Menu">
           <nav>
-            <Button type="primary" onClick={() => handleNav('/')}>Leaderboard</Button>
+            <Button type="primary" onClick={() => handleNav('')}>Leaderboard</Button>
             {/*<Button type="primary" onClick={() => handleNav('/add')}>Add Player</Button>*/}
           </nav>
         </div>
         <Routes>
-          <Route path="/" element={<Leaderboard leaderboard={backEndData.leaderboard || []} error={error} />} />
-          <Route path="/add" element={(() => { console.log('Action: Displaying AddPlayer form'); return <AddPlayer />; })()} />
+          <Route path="/" element={<Leaderboard leaderboard={leaderboard} handleUpdate={handleUpdate} handleDelete={handleDelete} handleRefresh={handleRefresh} loading={loading} error={error} />} />
+          <Route path="/add" element={<AddPlayer onPlayerAdded={fetchLeaderboard} />} />
         </Routes>
       </div>
     </ClickUIProvider>

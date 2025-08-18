@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import LeaderboardService from "../services/LeaderboardService";
 import { Button, TextField, Title, Text } from '@clickhouse/click-ui';
 import { useNavigate } from "react-router-dom";
 
-export default function AddPlayer() {
+export default function AddPlayer(props) {
   const [summonerName, setSummonerName] = useState("");
   const [tagLine, setTagLine] = useState("");
   const [message, setMessage] = useState("");
@@ -16,7 +16,10 @@ export default function AddPlayer() {
       setMessage("Player added successfully!");
       setSummonerName("");
       setTagLine("");
-      navigate('/'); 
+      if (props.onPlayerAdded) {
+        props.onPlayerAdded();
+      }
+      navigate('/');
     } catch (error) {
       if (error.response && error.response.status) {
         setMessage("Error adding player: " + error.response.data.error);
@@ -28,7 +31,7 @@ export default function AddPlayer() {
 
   return (
     <div className="add-player-container">
-      <div className="add-player-title"><Title size="xxl" type="h2" style={{ fontSize: '2.5rem', fontWeight: 700}}>Add Player</Title></div>
+      <div className="add-player-title"><Title size="xxl" type="h2" style={{ fontSize: '2.5rem', fontWeight: 700 }}>Add Player</Title></div>
       <form className="add-player-form" onSubmit={handleSubmit}>
         <TextField
           label="Tagline"
@@ -47,7 +50,7 @@ export default function AddPlayer() {
         />
         <Button htmlType="submit" label="Add Player" type="secondary"></Button>
       </form>
-      <div className="errorMessage"><Text size = "lg" weight="bold" color="danger">{message && <p>{message}</p>}</Text></div>
+      <div className="errorMessage"><Text size="lg" weight="bold" color="danger">{message && <p>{message}</p>}</Text></div>
     </div>
   );
 }

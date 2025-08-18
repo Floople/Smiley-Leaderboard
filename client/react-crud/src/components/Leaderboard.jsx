@@ -1,33 +1,7 @@
-import { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
-import LeaderboardService from "../services/LeaderboardService";
 import LeaderboardTable from "./LeaderboardTable";
-import useHandles from "../util/useHandles.jsx";
 import {Button, Icon } from '@clickhouse/click-ui';
 
-const Leaderboard = props => {
-    const { id } = useParams();
-    const [leaderboard, setLeaderboard] = useState([]);
-    const [error, setError] = useState(null);
-
-    const fetchLeaderboard = async () => {
-        try {
-            const response = await LeaderboardService.getAll();
-            const data = response.data.leaderboard;
-            if (Array.isArray(data)) {
-                setLeaderboard(data);
-            } else {
-                setLeaderboard([]);
-                console.log('Leaderboard data from API is not an array:', data);
-            }
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    useEffect(() => {
-        fetchLeaderboard();
-    }, [id]);
+const Leaderboard = ({leaderboard,handleUpdate,handleDelete,handleRefresh,loading,error}) => {
 
     // Filtered leaderboard with only required fields
     const filteredLeaderboard = leaderboard.map(player => ({
@@ -41,12 +15,11 @@ const Leaderboard = props => {
         losses: player.loss
     }));
 
-    const { handleUpdate, loading, handleDelete, handleRefresh } = useHandles({ setError, fetchLeaderboard });
 
     // Defensive: always use array
     const safeLeaderboard = Array.isArray(filteredLeaderboard) ? filteredLeaderboard : [];
     // Always show header and update button
-    return (
+        return ( 
         <div>
             <div className="leaderboard-header">
                 <h2 className="Smiley" color="default" family="brand" size="md">:)</h2>
@@ -63,7 +36,7 @@ const Leaderboard = props => {
                 handleUpdate={handleUpdate}
                 showAddRow={safeLeaderboard.length === 0}
             />
-            {error && <div className="errorMessage">{error}</div>}
+                {error && <div className="error">Error: {typeof error === 'string' ? error : (error.message || JSON.stringify(error))}</div>}
         </div>
     );
 }

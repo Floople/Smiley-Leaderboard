@@ -13,7 +13,7 @@ const updateLeaderboard = () => {
 };
 
 const deletePlayer = (items, index) => {
-  return http.post("/delete", { items, index });
+  return http.delete("/delete", { data: { items, index } });
 };
 
 const LeaderboardService = {

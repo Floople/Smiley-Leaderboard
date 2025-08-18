@@ -1,7 +1,6 @@
 import { dbGetAll, dbInsert, dbDelete, dbWipe, dbGetPlayers } from "./db/index.js";
 import { riotPUUID, riotPlayerDetails } from './riot/index.js';
-import {Hono} from 'hono';
-import { serveStatic } from 'hono/cloudflare-workers';
+import { Hono } from 'hono';
 
 const app = new Hono();
 
@@ -16,7 +15,7 @@ function buildHeaders() {
 }
 
 // GET /api
-app.get('/api', async (request, env) => {
+app.get('/api', async () => {
   try {
     console.log('GET /api: calling dbGetAll...');
     const rows = await dbGetAll();
@@ -26,7 +25,10 @@ app.get('/api', async (request, env) => {
     });
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({
+      error: error.message,
+      stack: error.stack
+    }), {
       status: 500,
       headers: buildHeaders()
     });
@@ -34,12 +36,13 @@ app.get('/api', async (request, env) => {
 });
 
 // POST /api/insert
-app.post('/api/insert', async (request, env) => {
+app.post('/api/insert', async (c) => {
   try {
-    console.log('POST /api/insert: parsing request body...');
-    const body = await request.json();
     console.log('POST /api/insert: calling riotPUUID...');
-    const { summoner_name, tagLine } = body;
+    const { summoner_name, tagLine } = await c.req.json();
+    //const { summoner_name } = c.req.param('summoner_name');
+    //const { tagLine } = c.req.param('tagLine');
+    console.log(`POST /api/insert: summoner_name=${summoner_name}, tagLine=${tagLine}`);
     const playerID = await riotPUUID(summoner_name, tagLine);
     console.log('POST /api/insert: riotPUUID finished, calling riotPlayerDetails...');
     const playerData = await riotPlayerDetails(playerID.puuid);
@@ -66,7 +69,7 @@ app.post('/api/insert', async (request, env) => {
 });
 
 // POST /api/update
-app.post('/api/update', async (request, env) => {
+app.post('/api/update', async () => {
   try {
     console.log('POST /api/update: calling dbGetPlayers...');
     const players = await dbGetPlayers();
@@ -107,22 +110,23 @@ app.post('/api/update', async (request, env) => {
 
 // POST /api/delete
 //update to take from hono c object not request,env
-app.post('/api/delete', async (request, env) => {
+app.delete('/api/delete', async (c) => {
   try {
-    console.log('POST /api/delete: parsing request body...');
-    const body = await request.json();
-    const { items } = body;
-    const summoner_name = items.summoner_name;
-    const tagLine = items.tagLine;
-    console.log(`POST /api/delete: calling dbDelete for ${summoner_name}...`);
-    await dbDelete(summoner_name, tagLine);
-    console.log(`POST /api/delete: dbDelete for ${summoner_name} finished`);
-    return new Response(JSON.stringify({ message: "Player removed from leaderboard." }), {
-      status: 200,
-      headers: buildHeaders()
-    });
+    const data = await c.req.json();
+    const { summoner_name, tagLine } = data.items;
+    const result = await dbDelete(summoner_name, tagLine);
+    if (result && result.success) {
+      return new Response(JSON.stringify({ message: "Player removed from leaderboard." }), {
+        status: 200,
+        headers: buildHeaders()
+      });
+    } else {
+      return new Response(JSON.stringify({ message: "Player delete failed." }), {
+        status: 400,
+        headers: buildHeaders()
+      });
+    }
   } catch (error) {
-    console.error('Error in /api/delete:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: buildHeaders()
