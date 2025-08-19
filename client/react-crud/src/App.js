@@ -18,7 +18,7 @@ function App() {
     theme === 'dark' ? setTheme('light') : setTheme('dark')
   }
 
-  const fetchLeaderboard = async (retryCount = 0) => {
+  const fetchLeaderboard = useCallback(async (retryCount = 0) => {
     try {
       const response = await LeaderboardService.getAll();
       const data = response.data.leaderboard;
@@ -30,13 +30,12 @@ function App() {
       }
     } catch (err) {
       if (err.message.includes('Failed to fetch leaderboard data') && retryCount < 3) {
-        // Wait 500ms and retry up to 3 times
         setTimeout(() => fetchLeaderboard(retryCount + 1), 500);
       } else {
         setError(err.message);
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     console.log('Action: Fetching leaderboard data');
