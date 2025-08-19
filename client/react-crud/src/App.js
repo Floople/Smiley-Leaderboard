@@ -41,7 +41,7 @@ function App() {
   useEffect(() => {
     console.log('Action: Fetching leaderboard data');
     fetchLeaderboard();
-  }, []);
+  }, [fetchLeaderboard]);
 
   const { handleUpdate, loading, handleDelete, handleRefresh } = useHandles({ setError, fetchLeaderboard });
 
