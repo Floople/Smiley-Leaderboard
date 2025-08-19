@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import LeaderboardService from "./services/LeaderboardService.jsx";
 import AddPlayer from "./components/AddPlayer.jsx";
