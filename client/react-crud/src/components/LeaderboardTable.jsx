@@ -24,11 +24,11 @@ export default function LeaderboardTable({ leaderboard, handleDelete, handleRefr
         if (rankA !== rankB) return rankA - rankB;
         const lpA = a.lp || 0;
         const lpB = b.lp || 0;
-        return lpB - lpA; 
+        return lpB - lpA;
     });
 
     // Remove 'tagLine' from columns for display
-    const displayColumns = columns.filter(col => col.toLowerCase() !== 'tagline');
+    const displayColumns = ["Rank", ...columns.filter(col => col.toLowerCase() !== 'tagline')];
 
     // Add empty row with plus button
     const addPlayerRow = {
@@ -61,7 +61,7 @@ export default function LeaderboardTable({ leaderboard, handleDelete, handleRefr
     };
 
     const tableRows = [
-        ...sortedLeaderboard.map((player, idx) => Player({ player, columns: displayColumns, idx, handleDelete })),
+        ...sortedLeaderboard.map((player, idx) => Player({ player: { Rank: idx + 1, ...player }, columns: displayColumns, idx, handleDelete })),
         addPlayerRow
     ];
 
